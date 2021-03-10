@@ -7,7 +7,7 @@ import {
   POST,
   GET,
   DELETE,
-} from "./actions/apiActionTypes";
+} from "../actions/apiActionTypes";
 
 const initialState = {
   isLoading: false,
