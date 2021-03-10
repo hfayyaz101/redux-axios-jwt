@@ -10,6 +10,7 @@ import {
   DELETE,
 } from "./apiActionTypes";
 import { LOGOUT } from "./userActionTypes";
+import { URL, AuthKey } from "../index";
 
 // add `"proxy" : "https://localhost:8000"` in package.json file
 
@@ -138,28 +139,23 @@ export const resetValue = () => (dispatch) => {
 |       - data  | type: object  | request body
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api[link])
 */
-export const postData = (
-  data,
-  link,
-  token,
-  authorization = "basic",
-  stateLoading = true
-) => (dispatch) => {
+export const postData = (data, link, token, stateLoading = true) => (
+  dispatch
+) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
 
   let request = {
-    url: "/" + link + "/",
+    url: URL + "/" + link + "/",
     method: "POST",
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
     data: data,
@@ -193,26 +189,21 @@ export const postData = (
 |       - params  | type: string  | to be places at the end of the call
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api["GET-" + link])
 */
-export const getData = (
-  params,
-  link,
-  token,
-  authorization = "basic",
-  stateLoading = true
-) => (dispatch) => {
+export const getData = (params, link, token, stateLoading = true) => (
+  dispatch
+) => {
   stateLoading && dispatch(isLoading(true));
 
   let request = {
     method: "GET",
-    url: `/${link}/${params}/`,
+    url: URL + `/${link}/${params}/`,
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
   };
@@ -248,27 +239,21 @@ export const getData = (
 | Params:
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api[link])
 */
-export const getListData = (
-  link,
-  token,
-  authorization = "basic",
-  stateLoading = true
-) => (dispatch) => {
+export const getListData = (link, token, stateLoading = true) => (dispatch) => {
   if (stateLoading === true) {
     dispatch(isLoading(true));
   }
 
   let request = {
     method: "GET",
-    url: "/" + link + "/",
+    url: URL + "/" + link + "/",
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
   };
@@ -306,7 +291,6 @@ export const getListData = (
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
 |       - params| type: string  | params to be passed in url
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api[link])
@@ -316,7 +300,6 @@ export const putDataParams = (
   link,
   params,
   token,
-  authorization = "basic",
   stateLoading = true
 ) => (dispatch) => {
   if (stateLoading) {
@@ -324,11 +307,11 @@ export const putDataParams = (
   }
 
   let request = {
-    url: "/" + link + "/" + params + "/",
+    url: URL + "/" + link + "/" + params + "/",
     method: "PUT",
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
     data: data,
@@ -363,27 +346,22 @@ export const putDataParams = (
 |       - data  | type: object  
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api[link])
 */
-export const putDataSimple = (
-  data,
-  link,
-  token,
-  authorization = "basic",
-  stateLoading = true
-) => (dispatch) => {
+export const putDataSimple = (data, link, token, stateLoading = true) => (
+  dispatch
+) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
   let request = {
     method: "PUT",
-    url: `/${link}/`,
+    url: URL + `/${link}/`,
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
     data: data,
@@ -421,28 +399,23 @@ export const putDataSimple = (
 |       - params| type: string  | params to be passed in url
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api[link])
 */
-export const searchData = (
-  params,
-  link,
-  token,
-  authorization = "basic",
-  stateLoading = true
-) => (dispatch) => {
+export const searchData = (params, link, token, stateLoading = true) => (
+  dispatch
+) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
 
   let request = {
     method: "GET",
-    url: `/${link}?search=${params}`,
+    url: URL + `/${link}?search=${params}`,
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
   };
@@ -479,28 +452,23 @@ export const searchData = (
 |       - params| type: string  | params to be passed in url
 |       - link  | type: string  | call to be sent to a url.
 |       - token | type: string  | null = not auth else token key.
-|       - authorization | type: string | default = "basic"
 |       - stateLoading  | type: boolean| default = true
 |       
 | let value = useState((state) => state.api[link])
 */
-export const deleteData = (
-  params,
-  link,
-  token,
-  authorization = "basic",
-  stateLoading = true
-) => (dispatch) => {
+export const deleteData = (params, link, token, stateLoading = true) => (
+  dispatch
+) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
 
   let request = {
     method: "DELETE",
-    url: `/${link}/${params}/`,
+    url: URL + `/${link}/${params}/`,
     headers: token
       ? {
-          Authorization: authorization + " " + token,
+          Authorization: AuthKey + " " + token,
         }
       : {},
   };

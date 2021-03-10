@@ -6,6 +6,7 @@ import {
   LOGIN,
   LOGOUT,
 } from "./userActionTypes";
+import { URL, AuthKey } from "../index";
 
 /*
 |--------------------------------------------------------------------------
@@ -110,7 +111,6 @@ export const firstTimeLoad = () => (dispatch) => {
 |       - userName  | type: string   
 |       - password  | type: string   
 |       - userDetailsLink  | type: string | Default = /account/getuser/
-|       - authorization    | type: string | Default = basic
 |
 | On success gets token and refresh token which than gets stored in
 | localstorage.
@@ -123,8 +123,7 @@ export const firstTimeLoad = () => (dispatch) => {
 export const loginUser = (
   userName,
   password,
-  userDetailsLink = "/account/getuser/",
-  authorization = "basic"
+  userDetailsLink = "/account/getuser/"
 ) => (dispatch) => {
   dispatch(isLoading(true));
 
@@ -134,7 +133,7 @@ export const loginUser = (
 
   let request = {
     method: "POST",
-    url: `/token/`,
+    url: URL + `/token/`,
     body: data,
     mimeType: "multipart/form-data",
     data,
@@ -148,9 +147,9 @@ export const loginUser = (
       if (response && response.status === 200) {
         let request2 = {
           method: "GET",
-          url: userDetailsLink,
+          url: URL + userDetailsLink,
           headers: {
-            Authorization: authorization + " " + response.data.access,
+            Authorization: AuthKey + " " + response.data.access,
           },
         };
         var user_data = {};
