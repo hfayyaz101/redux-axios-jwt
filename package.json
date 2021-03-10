@@ -1,6 +1,6 @@
 {
   "name": "redux-axios-jwt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Boilerplate for REST apis.",
   "main": "index.js",
   "scripts": {
