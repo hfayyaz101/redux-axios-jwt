@@ -2,15 +2,12 @@ import axios from "axios";
 import {
   API_LOADING,
   API_RETURN_MSG,
+  UNIVERSAL,
   API_CHANGE_VALUE,
   API_RESET_VALUE,
   POST,
-  LIST,
   GET,
-  SCAN,
-  UNIVERSAL,
-  COLOR_MODE,
-  USER_APPEND_VALUE,
+  DELETE,
 } from "./apiActionTypes";
 import { LOGOUT } from "./userActionTypes";
 
@@ -158,7 +155,7 @@ export const postData = (
   }
 
   let request = {
-    url: url + "/" + link + "/",
+    url: "/" + link + "/",
     method: "POST",
     headers: token
       ? {
@@ -187,31 +184,38 @@ export const postData = (
     });
 };
 
-// GET DATA (/link/params)
+/*
+|--------------------------------------------------------------------------
+| getData - Sends get request and returns with an error or request.
+|--------------------------------------------------------------------------
+|  
+| Params:
+|       - params  | type: string  | to be places at the end of the call
+|       - link  | type: string  | call to be sent to a url.
+|       - token | type: string  | null = not auth else token key.
+|       - authorization | type: string | default = "basic"
+|       - stateLoading  | type: boolean| default = true
+|       
+| let value = useState((state) => state.api["GET-" + link])
+*/
 export const getData = (
   params,
   link,
   token,
-  stateLoading = true,
-  authorization = "basic "
+  authorization = "basic",
+  stateLoading = true
 ) => (dispatch) => {
   stateLoading && dispatch(isLoading(true));
 
-  var request = {};
-  if (token) {
-    request = {
-      method: "GET",
-      url: `/${link}/${params}/`,
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-    };
-  } else {
-    request = {
-      method: "GET",
-      url: `/${link}/${params}/`,
-    };
-  }
+  let request = {
+    method: "GET",
+    url: `/${link}/${params}/`,
+    headers: token
+      ? {
+          Authorization: authorization + " " + token,
+        }
+      : {},
+  };
 
   return axios(request)
     .then((response) => {
@@ -236,88 +240,45 @@ export const getData = (
     });
 };
 
-// POSt Data
-
-// CREATE / UPDATE Data
-export const editUpdateData = (
-  data,
-  table_name,
-  id,
+/*
+|--------------------------------------------------------------------------
+| getListData - Sends get request and returns with an error or request.
+|--------------------------------------------------------------------------
+|  
+| Params:
+|       - link  | type: string  | call to be sent to a url.
+|       - token | type: string  | null = not auth else token key.
+|       - authorization | type: string | default = "basic"
+|       - stateLoading  | type: boolean| default = true
+|       
+| let value = useState((state) => state.api[link])
+*/
+export const getListData = (
+  link,
   token,
+  authorization = "basic",
   stateLoading = true
 ) => (dispatch) => {
-  if (stateLoading) {
-    dispatch(isLoading(true));
-  }
-
-  var request = {};
-  if (token) {
-    request = {
-      url: url + "/" + table_name + "/" + id + "/",
-      method: "PUT",
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-      data: data,
-    };
-  } else {
-    request = {
-      url: url + "/" + table_name + "/" + id + "/",
-      method: "PUT",
-      data: data,
-    };
-  }
-
-  return axios(request)
-    .then((response) => {
-      dispatch({
-        type: CREATE_UPDATE,
-        payload: response,
-      });
-      dispatch(isLoading(false));
-      return response;
-    })
-    .catch((err) => {
-      if (err.response.statusText === "Unauthorized") {
-        dispatch({ type: LOGOUT });
-      } else {
-        dispatch(returnMsg(err));
-        dispatch(isLoading(false));
-      }
-    });
-};
-
-// List Data (url/table_name)
-export const listData = (table_name, token, stateLoading = true) => (
-  dispatch
-) => {
   if (stateLoading === true) {
     dispatch(isLoading(true));
   }
 
-  var request = {};
-  if (token) {
-    request = {
-      method: "GET",
-      url: url + "/" + table_name + "/",
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-    };
-  } else {
-    request = {
-      method: "GET",
-      url: url + "/" + table_name + "/",
-    };
-  }
-  //Parent Child relation...Parent  passes feature(response) to its child that "since i am dying" hey yo my sweet child you use it for your life now....
+  let request = {
+    method: "GET",
+    url: "/" + link + "/",
+    headers: token
+      ? {
+          Authorization: authorization + " " + token,
+        }
+      : {},
+  };
 
   return axios(request)
     .then((response) => {
       dispatch({
-        type: LIST,
+        type: GET,
         payload: {
-          name: table_name,
+          name: link,
           response,
         },
       });
@@ -334,37 +295,50 @@ export const listData = (table_name, token, stateLoading = true) => (
     });
 };
 
-// LIST SCAN DATA (url/link/params)
-export const scanData = (params, link, token, stateLoading = true) => (
-  dispatch
-) => {
+/*
+|--------------------------------------------------------------------------
+| putDataParams - Sends put request with data and returns with an error 
+| or request.
+|--------------------------------------------------------------------------
+|  
+| Params:
+|       - data  | type: object  
+|       - link  | type: string  | call to be sent to a url.
+|       - token | type: string  | null = not auth else token key.
+|       - params| type: string  | params to be passed in url
+|       - authorization | type: string | default = "basic"
+|       - stateLoading  | type: boolean| default = true
+|       
+| let value = useState((state) => state.api[link])
+*/
+export const putDataParams = (
+  data,
+  link,
+  params,
+  token,
+  authorization = "basic",
+  stateLoading = true
+) => (dispatch) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
-  var request = {};
-  if (token) {
-    request = {
-      method: "GET",
-      url: `/${link}/${params}/`,
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-    };
-  } else {
-    request = {
-      method: "GET",
-      url: `/${link}/${params}/`,
-    };
-  }
+
+  let request = {
+    url: "/" + link + "/" + params + "/",
+    method: "PUT",
+    headers: token
+      ? {
+          Authorization: authorization + " " + token,
+        }
+      : {},
+    data: data,
+  };
 
   return axios(request)
     .then((response) => {
       dispatch({
-        type: SCAN,
-        payload: {
-          name: link,
-          response,
-        },
+        type: POST,
+        payload: response,
       });
       dispatch(isLoading(false));
       return response;
@@ -379,76 +353,41 @@ export const scanData = (params, link, token, stateLoading = true) => (
     });
 };
 
-// Change Status PUT
-export const putData = (data, tablename, token, stateLoading = true) => (
-  dispatch
-) => {
+/*
+|--------------------------------------------------------------------------
+| putDataSimple - Sends put request with data and returns with an error
+| or request.
+|--------------------------------------------------------------------------
+|  
+| Params:
+|       - data  | type: object  
+|       - link  | type: string  | call to be sent to a url.
+|       - token | type: string  | null = not auth else token key.
+|       - authorization | type: string | default = "basic"
+|       - stateLoading  | type: boolean| default = true
+|       
+| let value = useState((state) => state.api[link])
+*/
+export const putDataSimple = (
+  data,
+  link,
+  token,
+  authorization = "basic",
+  stateLoading = true
+) => (dispatch) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
-  var request = {};
-  if (token) {
-    request = {
-      method: "PUT",
-      url: `/${tablename}/`,
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-      data: data,
-    };
-  } else {
-    request = {
-      method: "PUT",
-      url: `/${tablename}/`,
-      data: data,
-    };
-  }
-
-  return axios(request)
-    .then((response) => {
-      dispatch({
-        type: SCAN,
-        payload: {
-          name: tablename,
-          response,
-        },
-      });
-      dispatch(isLoading(false));
-      return response;
-    })
-    .catch((err) => {
-      if (err.response.statusText === "Unauthorized") {
-        dispatch({ type: LOGOUT });
-      } else {
-        dispatch(returnMsg(err));
-        dispatch(isLoading(false));
-      }
-    });
-};
-
-// SEARCH DATA (url/link/params)
-export const searchData = (params, link, token, stateLoading = true) => (
-  dispatch
-) => {
-  if (stateLoading) {
-    dispatch(isLoading(true));
-  }
-
-  var request = {};
-  if (token) {
-    request = {
-      method: "GET",
-      url: `/${link}?search=${params}`,
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-    };
-  } else {
-    request = {
-      method: "GET",
-      url: `/${link}?search=${params}`,
-    };
-  }
+  let request = {
+    method: "PUT",
+    url: `/${link}/`,
+    headers: token
+      ? {
+          Authorization: authorization + " " + token,
+        }
+      : {},
+    data: data,
+  };
 
   return axios(request)
     .then((response) => {
@@ -472,79 +411,46 @@ export const searchData = (params, link, token, stateLoading = true) => (
     });
 };
 
-// SEARCH DATA (url/link/params)
-export const searchData2 = (params, link, token, stateLoading = true) => (
-  dispatch
-) => {
+/*
+|--------------------------------------------------------------------------
+| searchData - Sends get request with search params and returns with an
+| error or request.
+|--------------------------------------------------------------------------
+|  
+| Params:
+|       - params| type: string  | params to be passed in url
+|       - link  | type: string  | call to be sent to a url.
+|       - token | type: string  | null = not auth else token key.
+|       - authorization | type: string | default = "basic"
+|       - stateLoading  | type: boolean| default = true
+|       
+| let value = useState((state) => state.api[link])
+*/
+export const searchData = (
+  params,
+  link,
+  token,
+  authorization = "basic",
+  stateLoading = true
+) => (dispatch) => {
   if (stateLoading) {
     dispatch(isLoading(true));
   }
 
-  var request = {};
-  if (token) {
-    request = {
-      method: "GET",
-      url: `/${link}?search=${params}`,
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-    };
-  } else {
-    request = {
-      method: "GET",
-      url: `/${link}?search=${params}`,
-    };
-  }
+  let request = {
+    method: "GET",
+    url: `/${link}?search=${params}`,
+    headers: token
+      ? {
+          Authorization: authorization + " " + token,
+        }
+      : {},
+  };
 
   return axios(request)
     .then((response) => {
       dispatch({
         type: GET,
-        payload: {
-          name: link + "2",
-          response,
-        },
-      });
-      dispatch(isLoading(false));
-      return response;
-    })
-    .catch((err) => {
-      if (err.response.statusText === "Unauthorized") {
-        dispatch({ type: LOGOUT });
-      } else {
-        dispatch(returnMsg(err));
-        dispatch(isLoading(false));
-      }
-    });
-};
-
-// Delete
-export const deleteData = (params, link, token, stateLoading = true) => (
-  dispatch
-) => {
-  if (stateLoading) {
-    dispatch(isLoading(true));
-  }
-  var request = {};
-  if (token) {
-    request = {
-      method: "DELETE",
-      url: `/${link}/${params}/`,
-      headers: {
-        Authorization: authorization + " " + token,
-      },
-    };
-  } else {
-    request = {
-      method: "DELETE",
-      url: `/${link}/${params}/`,
-    };
-  }
-
-  return axios(request)
-    .then((response) => {
-      dispatch({
-        type: SCAN,
         payload: {
           name: link,
           response,
@@ -563,64 +469,60 @@ export const deleteData = (params, link, token, stateLoading = true) => (
     });
 };
 
-// Color mode
-export const colorMode = (data) => (dispatch) => {
-  dispatch({
-    type: COLOR_MODE,
-    payload: {
-      color: data,
-    },
-  });
-};
-
-export const appendValue = (value) => (dispatch) => {
-  dispatch({
-    type: USER_APPEND_VALUE,
-    payload: {
-      value,
-    },
-  });
-};
-
-// Local Storage => have to change into session storage
-export const firstTimeLoadApis = () => (dispatch) => {
-  if (localStorage.getItem("colorMode")) {
-    let color_mode = localStorage.getItem("colorMode");
-    // let email = JSON.parse(user_data).userData.email;
-    // let request0 = {
-    //   method: "POST",
-    //   data: {
-    //     email: email
-    //   },
-    //   url: url + "/accounts/email/check/"
-    // };
-
-    // axios(request0).then(res => {
-    //   if (!res.data.status) {
-    //     dispatch({
-    //       type: LOGOUT
-    //     });
-    //   } else {
-    dispatch({
-      type: COLOR_MODE,
-      payload: { color: color_mode },
-    });
-    //   }
-    // });
+/*
+|--------------------------------------------------------------------------
+| deleteData - Sends delete request with params and returns with an
+| error or request.
+|--------------------------------------------------------------------------
+|  
+| Params:
+|       - params| type: string  | params to be passed in url
+|       - link  | type: string  | call to be sent to a url.
+|       - token | type: string  | null = not auth else token key.
+|       - authorization | type: string | default = "basic"
+|       - stateLoading  | type: boolean| default = true
+|       
+| let value = useState((state) => state.api[link])
+*/
+export const deleteData = (
+  params,
+  link,
+  token,
+  authorization = "basic",
+  stateLoading = true
+) => (dispatch) => {
+  if (stateLoading) {
+    dispatch(isLoading(true));
   }
-  if (
-    localStorage.getItem("log_array") &&
-    localStorage.getItem("log_array") !== "undefined" &&
-    Array.isArray(JSON.parse(localStorage.getItem("log_array")))
-  ) {
-    if (JSON.parse(localStorage.getItem("log_array")).length !== 0) {
-      let value = JSON.parse(localStorage.getItem("log_array"));
+
+  let request = {
+    method: "DELETE",
+    url: `/${link}/${params}/`,
+    headers: token
+      ? {
+          Authorization: authorization + " " + token,
+        }
+      : {},
+  };
+
+  return axios(request)
+    .then((response) => {
       dispatch({
-        type: USER_APPEND_VALUE,
+        type: DELETE,
         payload: {
-          value,
+          name: link,
+          response,
         },
       });
-    }
-  }
+      dispatch(isLoading(false));
+      return response;
+    })
+    .catch((err) => {
+      if (err.response.statusText === "Unauthorized") {
+        dispatch({ type: LOGOUT });
+      } else {
+        dispatch(returnMsg(err));
+        dispatch(isLoading(false));
+      }
+    });
 };
